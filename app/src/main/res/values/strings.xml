@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Note app</string>
+
+    <string name="list_search">جستجو</string>
+    <string name="list_allNotes">همه یادداشت ها</string>
+    <string name="list_count">مورد %1$s</string>
+    <string name="list_add">افزودن</string>
+
+    <string name="add_addNote">افزودن یادداشت</string>
+    <string name="add_completeAllFields">لطفا موارد زیر را پر کنید</string>
+    <string name="add_edit">ویرایش</string>
+    <string name="add_title">عنوان یادداشت</string>
+    <string name="add_note">توضیحات یادداشت</string>
+    <string name="delete">حذف</string>
+</resources>
