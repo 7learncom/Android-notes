@@ -3,7 +3,7 @@
 
     <string name="list_search">جستجو</string>
     <string name="list_allNotes">همه یادداشت ها</string>
-    <string name="list_count">مورد %1$s</string>
+    <string name="list_count">مورد %1$d</string>
     <string name="list_add">افزودن</string>
 
     <string name="add_addNote">افزودن یادداشت</string>
