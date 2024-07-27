@@ -3,10 +3,15 @@ package com.mhd.noteapp.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
 import com.mhd.noteapp.data.NoteDao
+import com.mhd.noteapp.data.NoteEntity
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 class AddNoteViewModel(
     private val noteDao: NoteDao,
@@ -30,5 +35,20 @@ class AddNoteViewModel(
 
     val isInEditMode: Boolean
         get() = args.noteId != -1
+
+    private val _onNoteCreatedEvent = MutableSharedFlow<Unit>()
+    val onNoteCreatedEvent = _onNoteCreatedEvent.asSharedFlow()
+
+    fun onActionClick(title: String, text: String) {
+        val note = NoteEntity(
+            title = title,
+            text = text,
+        )
+
+        viewModelScope.launch {
+            noteDao.upsert(note)
+            _onNoteCreatedEvent.emit(Unit)
+        }
+    }
 
 }

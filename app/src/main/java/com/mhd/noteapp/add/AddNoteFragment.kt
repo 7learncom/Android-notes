@@ -5,8 +5,13 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.mhd.noteapp.R
 import com.mhd.noteapp.databinding.FragmentAddBinding
+import kotlinx.coroutines.launch
 
 class AddNoteFragment: Fragment(R.layout.fragment_add) {
 
@@ -20,6 +25,16 @@ class AddNoteFragment: Fragment(R.layout.fragment_add) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAddBinding.bind(view)
         setupViews()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(
+                state = Lifecycle.State.STARTED
+            ) {
+                viewModel.onNoteCreatedEvent.collect {
+                    findNavController().navigateUp()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -29,6 +44,16 @@ class AddNoteFragment: Fragment(R.layout.fragment_add) {
 
     private fun setupViews() {
         handleButtonStates()
+
+        binding.ivBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.llAction.setOnClickListener {
+            val title = binding.edtTitle.text?.toString().orEmpty()
+            val text = binding.edtNote.text?.toString().orEmpty()
+            viewModel.onActionClick(title, text)
+        }
     }
 
     private fun handleButtonStates() {
