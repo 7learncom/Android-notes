@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layoutDirection="rtl">
+    android:layoutDirection="rtl">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -107,6 +107,7 @@
     </ScrollView>
 
     <LinearLayout
+        android:minHeight="56dp"
         android:id="@+id/ll_buttonsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,10 +134,10 @@
                 tools:text="@string/add_addNote" />
 
             <ImageView
-                android:id="@+id/uv_action"
+                android:id="@+id/iv_action"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                app:srcCompat="@android:drawable/ic_input_add"
+                tools:srcCompat="@android:drawable/ic_input_add"
                 app:tint="#428DED" />
 
         </LinearLayout>
