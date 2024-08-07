@@ -32,7 +32,13 @@ class NoteListFragment: Fragment(R.layout.fragment_list) {
 
                     val adapter = NoteAdapter(
                         notes = notes,
-                        onNoteClick = {},
+                        onNoteClick = {
+                            val action =
+                                NoteListFragmentDirections.actionNoteListFragmentToAddNoteFragment(
+                                    noteId = it
+                                )
+                            findNavController().navigate(action)
+                        },
                     )
                     binding.rvNotes.adapter = adapter
 
