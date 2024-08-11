@@ -6,12 +6,13 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
 
     @Query("SELECT * FROM note")
-    suspend fun getAll(): List<NoteEntity>
+    fun getAll(): Flow<List<NoteEntity>>
 
     @Query("SELECT * FROM note WHERE id = :noteId")
     suspend fun getNoteById(noteId: Int): NoteEntity

@@ -10,7 +10,12 @@ import com.mhd.noteapp.NoteApplication
 import com.mhd.noteapp.data.NoteDao
 import com.mhd.noteapp.data.NoteEntity
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(
@@ -28,17 +33,11 @@ class NoteListViewModel(
         }
     }
 
-    private val _notes = MutableStateFlow<List<NoteEntity>>(emptyList())
-    val notes = _notes.asStateFlow()
+    val notes = noteDao.getAll()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
 
-    init {
-        getNotes()
-    }
-
-    private fun getNotes() {
-        viewModelScope.launch {
-            val notes = noteDao.getAll()
-            _notes.value = notes
-        }
-    }
 }
