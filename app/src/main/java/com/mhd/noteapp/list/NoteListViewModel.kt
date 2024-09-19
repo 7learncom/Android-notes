@@ -8,15 +8,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
 import com.mhd.noteapp.data.NoteDao
-import com.mhd.noteapp.data.NoteEntity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class NoteListViewModel(
     private val noteDao: NoteDao,
@@ -33,11 +29,23 @@ class NoteListViewModel(
         }
     }
 
-    val notes = noteDao.getAll()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+    private val searchQuery = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val notes = searchQuery.flatMapLatest { query ->
+        if (query.isBlank()) {
+            noteDao.getAll()
+        } else {
+            noteDao.searchNoteByTitle(query)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
+
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.value = query
+    }
 
 }

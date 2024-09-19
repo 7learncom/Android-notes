@@ -2,6 +2,7 @@ package com.mhd.noteapp.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -55,6 +56,12 @@ class NoteListFragment: Fragment(R.layout.fragment_list) {
     }
 
     private fun setupViews() {
+        binding.edtSearch.doAfterTextChanged {
+            viewModel.onSearchQueryChanged(
+                query = it?.toString().orEmpty()
+            )
+        }
+
         binding.btnAdd.setOnClickListener {
             val action = NoteListFragmentDirections.actionNoteListFragmentToAddNoteFragment()
             findNavController().navigate(action)
