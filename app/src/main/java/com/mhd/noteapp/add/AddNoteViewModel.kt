@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
-import com.mhd.noteapp.data.NoteDao
 import com.mhd.noteapp.data.NoteEntity
+import com.mhd.noteapp.data.NoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddNoteViewModel(
-    private val noteDao: NoteDao,
+    private val noteRepository: NoteRepository,
     private val args: AddNoteFragmentArgs,
 ) : ViewModel() {
 
@@ -26,12 +26,15 @@ class AddNoteViewModel(
             initializer {
                 val app =
                     this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as NoteApplication
-                val dao = app.appContainer.noteDao()
+                val repository = app.appContainer.noteRepository()
 
                 val savedStateHandle = createSavedStateHandle()
                 val args = AddNoteFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-                return@initializer AddNoteViewModel(noteDao = dao, args = args)
+                return@initializer AddNoteViewModel(
+                    noteRepository = repository,
+                    args = args
+                )
             }
         }
     }
@@ -57,22 +60,22 @@ class AddNoteViewModel(
         ) ?: NoteEntity(title = title, text = text)
 
         viewModelScope.launch {
-            noteDao.upsert(note)
+            noteRepository.upsertNote(note)
             _onActionCompleteEvent.emit(Unit)
         }
     }
 
     fun onNoteDeleteClick() {
-        viewModelScope.launch(Dispatchers.IO) {
-            noteDao.delete(_currentNote.value!!)
+        viewModelScope.launch {
+            noteRepository.deleteNote(_currentNote.value!!)
             _onActionCompleteEvent.emit(Unit)
         }
     }
 
     private fun fetchCurrentNote() {
         if (isInEditMode) {
-            viewModelScope.launch(Dispatchers.IO) {
-                _currentNote.value = noteDao.getNoteById(args.noteId)
+            viewModelScope.launch {
+                _currentNote.value = noteRepository.getNoteById(args.noteId)
             }
         }
     }

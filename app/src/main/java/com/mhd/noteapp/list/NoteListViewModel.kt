@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
-import com.mhd.noteapp.data.NoteDao
+import com.mhd.noteapp.data.NoteRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
 class NoteListViewModel(
-    private val noteDao: NoteDao,
+    private val noteRepository: NoteRepository,
 ) : ViewModel() {
 
     companion object {
@@ -23,7 +23,7 @@ class NoteListViewModel(
             initializer {
                 val application = this[APPLICATION_KEY] as NoteApplication
                 NoteListViewModel(
-                    noteDao = application.appContainer.noteDao()
+                    noteRepository = application.appContainer.noteRepository()
                 )
             }
         }
@@ -32,16 +32,12 @@ class NoteListViewModel(
     private val searchQuery = MutableStateFlow("")
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val notes = searchQuery.flatMapLatest { query ->
-        if (query.isBlank()) {
-            noteDao.getAll()
-        } else {
-            noteDao.searchNoteByTitle(query)
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+    val notes = searchQuery
+        .flatMapLatest(noteRepository::getNotes)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
     )
 
     fun onSearchQueryChanged(query: String) {

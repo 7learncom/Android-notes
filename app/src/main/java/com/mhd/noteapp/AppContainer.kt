@@ -4,12 +4,12 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import com.mhd.noteapp.data.AppDatabase
-import com.mhd.noteapp.data.NoteDao
+import com.mhd.noteapp.data.NoteRepository
+import com.mhd.noteapp.data.NoteRepositoryImpl
 
 interface AppContainer {
 
-    fun noteDao(): NoteDao
-
+    fun noteRepository(): NoteRepository
 }
 
 class AppContainerImpl(
@@ -29,6 +29,8 @@ class AppContainerImpl(
         ).build()
     }
 
-    override fun noteDao(): NoteDao = appDataBase.noteDao()
+    override fun noteRepository(): NoteRepository {
+        return NoteRepositoryImpl(appDataBase.noteDao())
+    }
 
 }
