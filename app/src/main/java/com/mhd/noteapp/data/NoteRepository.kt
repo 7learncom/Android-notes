@@ -1,9 +1,6 @@
 package com.mhd.noteapp.data
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 
 interface NoteRepository {
 
@@ -21,21 +18,15 @@ interface NoteRepository {
 
 class NoteRepositoryImpl(private val noteDao: NoteDao) : NoteRepository {
 
-    override suspend fun getNoteById(id: Int): NoteEntity = withContext(Dispatchers.IO) {
-            noteDao.getNoteById(id)
-        }
+    override suspend fun getNoteById(id: Int): NoteEntity = noteDao.getNoteById(id)
 
 
     override suspend fun upsertNote(noteEntity: NoteEntity) {
-        withContext(Dispatchers.IO) {
-            noteDao.upsert(noteEntity)
-        }
+        noteDao.upsert(noteEntity)
     }
 
     override suspend fun deleteNote(noteEntity: NoteEntity) {
-        withContext(Dispatchers.IO) {
-            noteDao.delete(noteEntity)
-        }
+        noteDao.delete(noteEntity)
     }
 
     override fun getAllNotes(): Flow<List<NoteEntity>> = noteDao.getAll()

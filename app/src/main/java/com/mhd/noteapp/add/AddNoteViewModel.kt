@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
+import com.mhd.noteapp.add.domain.DeleteNoteUseCase
+import com.mhd.noteapp.add.domain.GetNoteUseCase
+import com.mhd.noteapp.add.domain.UpsertUseCase
 import com.mhd.noteapp.data.NoteEntity
-import com.mhd.noteapp.data.NoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddNoteViewModel(
-    private val noteRepository: NoteRepository,
+    private val getNoteUseCase: GetNoteUseCase,
+    private val upsertUseCase: UpsertUseCase,
+    private val deleteNoteUseCase: DeleteNoteUseCase,
     private val args: AddNoteFragmentArgs,
 ) : ViewModel() {
 
@@ -32,7 +36,12 @@ class AddNoteViewModel(
                 val args = AddNoteFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
                 return@initializer AddNoteViewModel(
-                    noteRepository = repository,
+                    getNoteUseCase = GetNoteUseCase(
+                        repository = repository,
+                        coroutineDispatcher = Dispatchers.IO
+                    ),
+                    upsertUseCase = UpsertUseCase(repository = repository),
+                    deleteNoteUseCase = DeleteNoteUseCase(repository = repository),
                     args = args
                 )
             }
@@ -60,14 +69,14 @@ class AddNoteViewModel(
         ) ?: NoteEntity(title = title, text = text)
 
         viewModelScope.launch {
-            noteRepository.upsertNote(note)
+            upsertUseCase(note)
             _onActionCompleteEvent.emit(Unit)
         }
     }
 
     fun onNoteDeleteClick() {
         viewModelScope.launch {
-            noteRepository.deleteNote(_currentNote.value!!)
+            deleteNoteUseCase(_currentNote.value!!)
             _onActionCompleteEvent.emit(Unit)
         }
     }
@@ -75,7 +84,7 @@ class AddNoteViewModel(
     private fun fetchCurrentNote() {
         if (isInEditMode) {
             viewModelScope.launch {
-                _currentNote.value = noteRepository.getNoteById(args.noteId)
+                _currentNote.value = getNoteUseCase(args.noteId)
             }
         }
     }
