@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
-import com.mhd.noteapp.data.NoteRepository
+import com.mhd.noteapp.list.domain.GetNotesUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,15 +16,22 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
 class NoteListViewModel(
-    private val noteRepository: NoteRepository,
+    private val useCase: GetNotesUseCase,
 ) : ViewModel() {
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = this[APPLICATION_KEY] as NoteApplication
+                val repository = application.appContainer.noteRepository()
+
+                val useCase = GetNotesUseCase(
+                    noteRepository = repository,
+                    coroutineDispatcher = Dispatchers.IO
+                )
+
                 NoteListViewModel(
-                    noteRepository = application.appContainer.noteRepository()
+                    useCase = useCase,
                 )
             }
         }
@@ -33,7 +41,7 @@ class NoteListViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val notes = searchQuery
-        .flatMapLatest(noteRepository::getNotes)
+        .flatMapLatest(useCase::invoke)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

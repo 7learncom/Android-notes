@@ -7,7 +7,9 @@ import kotlinx.coroutines.withContext
 
 interface NoteRepository {
 
-    fun getNotes(searchQuery: String): Flow<List<NoteEntity>>
+    fun getAllNotes(): Flow<List<NoteEntity>>
+
+    fun searchNoteByTitle(query: String): Flow<List<NoteEntity>>
 
     suspend fun getNoteById(id: Int): NoteEntity
 
@@ -15,27 +17,14 @@ interface NoteRepository {
 
     suspend fun deleteNote(noteEntity: NoteEntity)
 
-//    fun getAllNotes(): Flow<NoteEntity>
-//
-//    fun searchNote(query: String): Flow<NoteEntity>
-
 }
 
 class NoteRepositoryImpl(private val noteDao: NoteDao) : NoteRepository {
 
-    override fun getNotes(searchQuery: String): Flow<List<NoteEntity>> {
-        return if (searchQuery.isBlank()) {
-            noteDao.getAll()
-        } else {
-            noteDao.searchNoteByTitle(searchQuery)
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun getNoteById(id: Int): NoteEntity {
-        return withContext(Dispatchers.IO) {
+    override suspend fun getNoteById(id: Int): NoteEntity = withContext(Dispatchers.IO) {
             noteDao.getNoteById(id)
         }
-    }
+
 
     override suspend fun upsertNote(noteEntity: NoteEntity) {
         withContext(Dispatchers.IO) {
@@ -47,6 +36,12 @@ class NoteRepositoryImpl(private val noteDao: NoteDao) : NoteRepository {
         withContext(Dispatchers.IO) {
             noteDao.delete(noteEntity)
         }
+    }
+
+    override fun getAllNotes(): Flow<List<NoteEntity>> = noteDao.getAll()
+
+    override fun searchNoteByTitle(query: String): Flow<List<NoteEntity>> {
+        return noteDao.searchNoteByTitle(query)
     }
 
 }
