@@ -1,7 +1,6 @@
 package com.mhd.noteapp.list
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -14,19 +13,7 @@ import com.mhd.noteapp.R
 import com.mhd.noteapp.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class Bar @Inject constructor()
-
-class Foo @Inject constructor(
-    bar: Bar
-){
-
-    fun log() {
-        Log.d("Foo", "log: It works")
-    }
-
-}
 
 @AndroidEntryPoint
 class NoteListFragment: Fragment(R.layout.fragment_list) {
@@ -37,14 +24,9 @@ class NoteListFragment: Fragment(R.layout.fragment_list) {
     private val binding: FragmentListBinding
         get() = _binding!!
 
-    @Inject
-    lateinit var foo: Foo
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentListBinding.bind(view)
-        foo.log()
         setupViews()
 
         viewLifecycleOwner.lifecycleScope.launch {
