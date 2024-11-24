@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class NoteListFragment: Fragment(R.layout.fragment_list) {
 
-    private val viewModel: NoteListViewModel by viewModels { NoteListViewModel.Factory }
+    private val viewModel: NoteListViewModel by viewModels()
 
     private var _binding: FragmentListBinding? = null
     private val binding: FragmentListBinding

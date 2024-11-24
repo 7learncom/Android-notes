@@ -5,8 +5,9 @@ import com.mhd.noteapp.data.NoteRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import javax.inject.Inject
 
-class GetNotesUseCase(
+class GetNotesUseCase @Inject constructor(
     private val noteRepository: NoteRepository,
     private val coroutineDispatcher: CoroutineDispatcher,
 ) {

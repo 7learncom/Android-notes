@@ -4,11 +4,16 @@ import android.content.Context
 import androidx.room.Room
 import com.mhd.noteapp.data.AppDatabase
 import com.mhd.noteapp.data.NoteDao
+import com.mhd.noteapp.data.NoteRepository
+import com.mhd.noteapp.data.NoteRepositoryImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -27,5 +32,8 @@ object AppModule {
         AppDatabase::class.java,
         "app-database"
     ).build()
+
+    @Provides
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
 }

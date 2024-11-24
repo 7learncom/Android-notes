@@ -8,34 +8,19 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mhd.noteapp.NoteApplication
 import com.mhd.noteapp.list.domain.GetNotesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class NoteListViewModel(
+@HiltViewModel
+class NoteListViewModel @Inject constructor(
     private val useCase: GetNotesUseCase,
 ) : ViewModel() {
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = this[APPLICATION_KEY] as NoteApplication
-                val repository = application.appContainer.noteRepository()
-
-                val useCase = GetNotesUseCase(
-                    noteRepository = repository,
-                    coroutineDispatcher = Dispatchers.IO
-                )
-
-                NoteListViewModel(
-                    useCase = useCase,
-                )
-            }
-        }
-    }
 
     private val searchQuery = MutableStateFlow("")
 

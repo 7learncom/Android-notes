@@ -1,6 +1,7 @@
 package com.mhd.noteapp.data
 
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 interface NoteRepository {
 
@@ -16,7 +17,8 @@ interface NoteRepository {
 
 }
 
-class NoteRepositoryImpl(private val noteDao: NoteDao) : NoteRepository {
+class NoteRepositoryImpl @Inject constructor(private val noteDao: NoteDao) : NoteRepository {
+
 
     override suspend fun getNoteById(id: Int): NoteEntity = noteDao.getNoteById(id)
 
