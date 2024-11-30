@@ -11,12 +11,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.mhd.noteapp.R
 import com.mhd.noteapp.databinding.FragmentAddBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AddNoteFragment: Fragment(R.layout.fragment_add) {
 
-    private val viewModel: AddNoteViewModel by viewModels { AddNoteViewModel.Factory }
+    private val viewModel: AddNoteViewModel by viewModels()
 
     private var _binding: FragmentAddBinding? = null
     private val binding: FragmentAddBinding
